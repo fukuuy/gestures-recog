@@ -119,3 +119,7 @@ python read_dynamic_csv.py
 - Ensure that the camera device is working properly before collecting gestures.
 - Data enhancement should be selected according to the actual situation to avoid overfitting.
 - When training the model, consider the size of the dataset and the complexity of the model to avoid resource waste.
+
+## 8. Contribute
+
+Welcome to contribute to this project, you can participate by submitting an issue or pull request.
