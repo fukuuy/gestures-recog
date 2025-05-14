@@ -1,126 +1,129 @@
-# ����ʶ����Ŀ
+# 手势识别项目
 
-## һ����Ŀ���
-����Ŀ��һ������ʶ��ϵͳ��֧�ֵ�˫�־�̬�Ͷ�̬���Ƶ������ռ���ģ��ѵ���Լ����ӻ�չʾ��ͨ��ʹ��Mediapipe������ֲ��ؼ����⣬��϶��ֻ���ѧϰ�����ѧϰģ�ͽ������Ʒ��࣬ͬʱ�ṩ��������ǿ���������ģ�͵ķ���������
+## 一、项目简介
+本项目是一个手势识别系统，支持单双手静态和动态手势的数据收集、模型训练以及可视化展示。通过使用Mediapipe库进行手部关键点检测，结合多种机器学习和深度学习模型进行手势分类，同时提供了数据增强功能以提高模型的泛化能力。
 
-## ���������ص�
-1. **�����ռ�**��֧�ֵ�˫�־�̬�Ͷ�̬���Ƶ������ռ�����ͨ��ͼ�ν���ָ�����Ʊ�ǩ���ռ����������ӳ�ʱ���������ǿ������
-2. **������ǿ**���ṩ����ƽ�ơ�������������ת����ǿ������������ѵ�����ݵĶ����ԡ�
-3. **ģ��ѵ��**��֧�ֶ��ֻ���ѧϰģ�ͣ������ɭ�֡�֧����������K���ڡ�XGBoost������֪���������ѧϰģ�ͣ�LSTM���������Ʒ��ࡣ
-4. **���ӻ�չʾ**���ṩ3D���ӻ�չʾ�ֲ��ؼ��㣬��ֱ�۹۲��������ݡ�
+## 二、功能特点
+1. **数据收集**：支持单双手静态和动态手势的数据收集，可通过图形界面指定手势标签、收集数据量、延迟时间和数据增强数量。
+2. **数据增强**：提供数据平移、添加噪声和旋转等增强方法，可增加训练数据的多样性。
+3. **模型训练**：支持多种机器学习模型（如随机森林、支持向量机、K近邻、XGBoost、多层感知机）和深度学习模型（LSTM）进行手势分类。
+4. **可视化展示**：提供3D可视化展示手部关键点，可直观观察手势数据。
 
-## ������Ŀ�ṹ
+## 三、项目结构
 ```
 gestures-recog/
-������ collect1.py           # ���־�̬�����ռ�
-������ collect1_dynamic.py   # ���ֶ�̬�����ռ�
-������ collect2.py           # ˫�־�̬�����ռ�
-������ collect2_dynamic.py   # ˫�ֶ�̬�����ռ�
-������ process/              # ���ݴ���ģ��
-��   ������ add_datas.py      # ������ǿ���ز���
-��   ������ normalizedata.py  # ���ݹ�һ��
-������ widgets/              # ͼ�ν���ģ��
-��   ������ ui.py             # ���ƽ���ʵ��
-��   ������ showfigure.py     # 3Dͼ��չʾ
-������ train.py              # ��̬����ģ��ѵ��
-������ train_dynamic.py      # ��̬����ģ��ѵ��
-������ recognition.py        # ����ʶ��ģ��
-������ read_csv.py           # ��̬���ݶ�ȡ�Ϳ��ӻ�
-������ read_dynamic_csv.py   # ��̬���ݶ�ȡ�Ϳ��ӻ�
-������ requirements.txt      # ��Ŀ����
-������ data/                 # ���ݼ��洢Ŀ¼
-    ������ hand_dataset.csv        # ���־�̬���ݼ�
-    ������ hand2_dataset.csv       # ˫�־�̬���ݼ�
-    ������ dynamic_hand_dataset_f20.csv    # ���ֶ�̬���ݼ�
-    ������ dynamic_hand2_dataset_f20.csv   # ˫�ֶ�̬���ݼ�
+├── collect1.py           # 单手静态数据收集
+├── collect1_dynamic.py   # 单手动态数据收集
+├── collect2.py           # 双手静态数据收集
+├── collect2_dynamic.py   # 双手动态数据收集
+├── process/              # 数据处理模块
+│   ├── add_datas.py      # 数据增强和重采样
+│   └── normalizedata.py  # 数据归一化
+├── widgets/              # 图形界面模块
+│   ├── ui.py             # 控制界面实现
+│   └── showfigure.py     # 3D图形展示
+├── train.py              # 静态手势模型训练
+├── train_dynamic.py      # 动态手势模型训练
+├── recognition.py        # 手势识别模块
+├── read_csv.py           # 静态数据读取和可视化
+├── read_dynamic_csv.py   # 动态数据读取和可视化
+├── requirements.txt      # 项目依赖
+└── data/                 # 数据集存储目录
+    ├── hand_dataset.csv        # 单手静态数据集
+    ├── hand2_dataset.csv       # 双手静态数据集
+    ├── dynamic_hand_dataset_f20.csv    # 单手动态数据集
+    └── dynamic_hand2_dataset_f20.csv   # 双手动态数据集
 ```
 
-## �ġ���װ����
-����Ŀ��Ŀ¼��ִ���������װ����������
+## 四、安装依赖
+在项目根目录下执行以下命令安装所需依赖：
 ```bash
 pip install -r requirements.txt
 ```
 
-## �塢ʹ�÷���
+## 五、使用方法
 
-### 1.�����ռ�
-- **���־�̬�����ռ�**��
+### 1.数据收集
+- **单手静态数据收集**：
 ```bash
 python collect1.py
 ```
-- **���ֶ�̬�����ռ�**��
+- **单手动态数据收集**：
 ```bash
 python collect1_dynamic.py
 ```
-- **˫�־�̬�����ռ�**��
+- **双手静态数据收集**：
 ```bash
 python collect2.py
 ```
-- **˫�ֶ�̬�����ռ�**��
+- **双手动态数据收集**：
 ```bash
 python collect2_dynamic.py
 ```
 
-### 2.ģ��ѵ��
-- **��̬����ģ��ѵ��**��
+### 2.模型训练
+- **静态手势模型训练**：
 ```bash
 python train.py
 ```
-- **��̬����ģ��ѵ��**��
+- **动态手势模型训练**：
 ```bash
 python train_dynamic.py
 ```
-### 3.ģ������
-- **��̬����ʶ��**��
+### 3.模型运行
+- **静态手势识别**：
 ```bash
 python recognition.py
 ```
 
-- **��̬����ʶ��**��
+- **动态手势识别**：
 ```bash
 python recognition_dynamic.py
 ```
 
-- **��̬����������ʶ��**��
+- **静态仅单手手势识别**：
 ```bash
 python recognition1.py
 ```
 
-- **��̬��˫������ʶ��**��
+- **静态仅双手手势识别**：
 ```bash
 python recognition2.py
 ```
 
-- **��̬����������ʶ��**��
+- **动态仅单手手势识别**：
 ```bash
 python recognition1_dynamic.py
 ```
 
-- **��̬��˫������ʶ��**��
+- **动态仅双手手势识别**：
 ```bash
 python recognition2_dynamic.py
 ```
 
-### 3.���ݿ��ӻ�(���ڲ鿴���ݼ�)
-- **��̬���ݿ��ӻ�**��
+### 3.数据可视化(用于查看数据集)
+- **静态数据可视化**：
 ```bash
 python read_csv.py
 ```
-- **��̬���ݿ��ӻ�**��
+- **动态数据可视化**：
 ```bash
 python read_dynamic_csv.py
 ```
 
 
-## �����ر�˵��
-- `requirements.txt`��ָ������Ŀ�����Python�⼰��汾��
-- `train.py` �� `train_dynamic.py` �п��޸����²�����
-  - `RANDOM_STATE`��������ӣ����ڱ�֤ʵ�����Ŀ��ظ��ԡ�
-  - `EPOCHS`��ѵ��������
-  - `BATCH_SIZE`�����δ�С��
-  - `FILE_PATH`�����ݼ��ļ�·����
+## 六、特别说明
+- `requirements.txt`：指定了项目所需的Python库及其版本。
+- `train.py` 和 `train_dynamic.py` 中可修改以下参数：
+  - `RANDOM_STATE`：随机种子，用于保证实验结果的可重复性。
+  - `EPOCHS`：训练轮数。
+  - `BATCH_SIZE`：批次大小。
+  - `FILE_PATH`：数据集文件路径。
 
-## �ߡ�ע������
-- ȷ������ͷ�豸�����������Ա���������ռ���
-- ������ǿ�����ɸ���ʵ������������Ա������ϡ�
-- ģ��ѵ��ʱ����ܽϳ���ȡ�������ݼ���С��ģ�͸��Ӷȡ�
+## 七、注意事项
+- 确保摄像头设备正常工作，以便进行数据收集。
+- 数据增强数量可根据实际情况调整，以避免过拟合。
+- 模型训练时间可能较长，取决于数据集大小和模型复杂度。
+
+## 八、贡献
+欢迎对本项目进行贡献，可通过提交 issue 或 pull request 的方式参与。
