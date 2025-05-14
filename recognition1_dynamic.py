@@ -52,7 +52,7 @@ if __name__ == "__main__":
                     cv2.putText(frame, f"{gesture} ({confidence:.2f})", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 3)
 
         cv2.imshow("Dynamic Gesture Recognition", frame)
-        if cv2.waitKey(1) & 0xFF == 27:
+        if cv2.waitKey(1) & 0xFF == 27: # ESC退出
             break
 
     cap.release()

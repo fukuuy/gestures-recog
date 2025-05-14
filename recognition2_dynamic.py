@@ -4,10 +4,10 @@ import mediapipe as mp
 from tensorflow.keras.models import load_model
 import joblib
 from collections import deque
-from process.normalizedata import  normalize_hands_data
+from process.normalizedata import normalize_hands_data
 
-MODEL_PATH = 'models/hand/dy_model.h5'
-LABEL_PATH = 'models/hand/dy_label_encoder.pkl'
+MODEL_PATH = 'models/hands/dy_model.h5'
+LABEL_PATH = 'models/hands/dy_label_encoder.pkl'
 model = load_model(MODEL_PATH)
 label = joblib.load(LABEL_PATH)
 label_map = {v[0]: k for k, v in label.items()}
@@ -19,7 +19,6 @@ hands = mp_hands.Hands(
     min_detection_confidence=0.5,
     min_tracking_confidence=0.5
 )
-
 
 if __name__ == "__main__":
     SEQUENCE_LEN = 20
@@ -44,18 +43,21 @@ if __name__ == "__main__":
                 hand_label = 0 if handedness.classification[0].label == 'Left' else 1
                 hands_data[hand_label] = handxyz
             hands_data = normalize_hands_data(hands_data)
-            frame_queue.append(hands_data)
+            left_hand = hands_data[0] if hands_data[0] else [0.0] * 63
+            right_hand = hands_data[1] if hands_data[1] else [0.0] * 63
+            frame_queue.append(left_hand + right_hand)
 
             if len(frame_queue) == SEQUENCE_LEN:
-                sequence = np.array(frame_queue).reshape(1, SEQUENCE_LEN, 60)
+                sequence = np.array(frame_queue).reshape(1, SEQUENCE_LEN, 126)
                 prediction = model.predict(sequence, verbose=0)
                 pred_label = np.argmax(prediction)
                 gesture = label_map.get(pred_label, "Unknown")
                 confidence = prediction[0][pred_label]
-                cv2.putText(frame, f"{gesture} ({confidence:.2f})", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 3)
+                cv2.putText(frame, f"{gesture} ({confidence:.2f})", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1.2,
+                            (0, 255, 0), 3)
 
         cv2.imshow("Dynamic Gesture Recognition", frame)
-        if cv2.waitKey(1) & 0xFF == 27:
+        if cv2.waitKey(1) & 0xFF == 27: # ESC退出
             break
 
     cap.release()

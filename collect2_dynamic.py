@@ -2,8 +2,7 @@ import csv
 import cv2
 import matplotlib.pyplot as plt
 import mediapipe as mp
-import numpy as np
-from process.add_datas import save_augmented_frames
+from process.add_datas import save_augmented_frames, resample_frames2
 from process.normalizedata import normalize_hands_data
 from widgets.ui import DYGUI
 from widgets.showfigure import PLOT2
@@ -29,44 +28,23 @@ def read_label():
                 labels.add(label)
         return sorted(labels)
     except FileNotFoundError:
-        print(f"ÎÄ¼şÎ´´´½¨")
+        print(f"æ–‡ä»¶æœªåˆ›å»º")
         return None
 
 
-def save_data(data, hlabel):
+def save_data(data, label):
     header = [f"{axis}0{i}" for i in range(0, 21) for axis in ["x", "y", "z"]] + [f"{axis}1{i}" for i in range(0, 21) for axis in ["x", "y", "z"]] + ["label"]
     save_frames = []
     with open(DATASET_PATH, "a", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         if f.tell() == 0:
             writer.writerow(header)
-        for i, features in enumerate(data):
-            data_row = features[3:] + [hlabel]
+        for features in data:
+            data_row = features.tolist() + [label]
             save_frames.append(data_row)
             writer.writerow(data_row)
-    print(f"ÒÑ±£´æÊı¾İ£¨±êÇ©£º{hlabel}£©")
+    print(f"å·²ä¿å­˜æ•°æ®ï¼ˆæ ‡ç­¾ï¼š{label}ï¼‰")
     return save_frames
-
-
-def resample_data(gesture_data, target_frames=20):
-    num_frames = len(gesture_data)
-    if num_frames == target_frames:
-        return gesture_data
-    elif num_frames < target_frames:
-        new_data = []
-        indices = np.linspace(0, num_frames - 1, target_frames)
-        for i in range(target_frames):
-            index_floor = int(np.floor(indices[i]))
-            index_ceil = min(int(np.ceil(indices[i])), num_frames - 1)
-            weight = indices[i] - index_floor
-            interpolated_frame = (1 - weight) * np.array(gesture_data[index_floor]) + weight * np.array(
-                gesture_data[index_ceil])
-            new_data.append(interpolated_frame.tolist())
-        return new_data
-    else:
-        step = num_frames // target_frames
-        new_data = [gesture_data[i * step] for i in range(target_frames)]
-        return new_data
 
 
 if __name__ == "__main__":
@@ -78,7 +56,7 @@ if __name__ == "__main__":
     gui = DYGUI()
     plt.ion()
     sequence = []
-    if read_label() is not None: print(f"ÒÑ¼ÇÂ¼±êÇ©{read_label()}")
+    if read_label() is not None: print(f"å·²è®°å½•æ ‡ç­¾{read_label()}")
     while cap.isOpened() and not gui.should_exit:
         success, image = cap.read()
         if not success:
@@ -106,14 +84,15 @@ if __name__ == "__main__":
             add_num = gui.get_add_num()
             frame += 1
             if gui.should_stop:
-                feature = resample_data(sequence, tar_frame)
-                save_frames = save_data(feature, label)
                 frame = 0
                 gui.reset_save_flag()
-                print("ÊÕ¼¯Íê³É")
+                gui.should_stop = False
+                feature = resample_frames2(sequence, tar_frame)
+                save_frames = save_data(feature, label)
+                print("æ”¶é›†å®Œæˆ")
                 if add_num != 0:
                     save_augmented_frames(save_frames, add_num, DATASET_PATH)
-                    print("Êı¾İÔöÇ¿Íê³É")
+                    print("æ•°æ®å¢å¼ºå®Œæˆ")
         gui.update()
 
     cap.release()

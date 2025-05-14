@@ -14,9 +14,9 @@ def load_data(csv_path):
     df = pd.read_csv(csv_path)
     X = df.iloc[:, :-1].values
     y = df.iloc[:, -1].values
-
+    dim = X.shape[1]
     sequences_num = len(X) // SEQUENCE_LEN
-    X = X[:sequences_num * SEQUENCE_LEN].reshape(-1, SEQUENCE_LEN, 20 * 3)
+    X = X[:sequences_num * SEQUENCE_LEN].reshape(-1, SEQUENCE_LEN, dim)
     y = y[:sequences_num * SEQUENCE_LEN].reshape(-1, SEQUENCE_LEN)
     y = y[:, 0]
     X_train, X_test, y_train, y_test = train_test_split(
@@ -80,18 +80,33 @@ def evaluate_model(model, X_test, y_test):
 
 
 if __name__ == "__main__":
-    TAR_FRAMES = 20
     SEQUENCE_LEN = 20
     RANDOM_STATE = 30
-    EPOCHS = 10
+    EPOCHS = 5
     BATCH_SIZE = 16
-    LABELS = {
+    FILE_PATH = f"data/dynamic_hand2_dataset_f{SEQUENCE_LEN}.csv"
+    SINGLE_LABELS = {
         'eat': [0],
         'circle': [1],
+        'come on': [2],
     }
-    FILE_PATH = f"data/dynamic_hand_dataset_f{TAR_FRAMES}.csv"
+    DOUBLE_LABELS = {
+        'one': [0],
+        'two': [1],
+        'three': [2],
+    }
 
-    joblib.dump(LABELS, 'models/hand/dy_label_encoder.pkl')
+    if FILE_PATH == f'data/dynamic_hand_dataset_f{SEQUENCE_LEN}.csv':
+        dictionary = 'hand'
+        LABELS = SINGLE_LABELS
+
+    elif FILE_PATH == f'data/dynamic_hand2_dataset_f{SEQUENCE_LEN}.csv':
+        dictionary = 'hands'
+        LABELS = DOUBLE_LABELS
+    else:
+        print("文件名错误")
+        exit(0)
+    joblib.dump(LABELS, f'models/{dictionary}/dy_label_encoder.pkl')
     print("标签映射已保存为 dy_label_encoder.pkl")
 
     X_train, X_test, y_train, y_test = load_data(FILE_PATH)
@@ -100,5 +115,5 @@ if __name__ == "__main__":
 
     evaluate_model(model, X_test, y_test)
 
-    model.save('models/hand/dy_model.h5')
+    model.save(f'models/{dictionary}/dy_model.h5')
     print("模型保存为 dy_model.h5")
