@@ -3,8 +3,8 @@ import cv2
 import matplotlib.pyplot as plt
 import mediapipe as mp
 import numpy as np
-from process.add_datas import save_augmented_frames, resample_frames1
-from process.normalizedata import normalize_hand_data1
+from processdata.addata import save_augmented_frames, resample_frames
+from processdata.normalizedata import normalize_hand_data1
 from widgets.ui import DYGUI
 from widgets.showfigure import PLOT1
 
@@ -87,7 +87,7 @@ if __name__ == "__main__":
                 frame = 0
                 gui.reset_save_flag()
                 gui.should_stop = False
-                feature = resample_frames1(sequence, tar_frame)
+                feature = resample_frames(sequence, tar_frame)
                 save_frames = save_data(feature, label)
                 print("收集完成")
                 if add_num != 0:
