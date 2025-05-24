@@ -16,7 +16,7 @@ gestures-recog/
     ├── collect1_dynamic.py   # Single-hand dynamic gesture collection
     ├── collect2.py           # Double-hand static gesture collection
     ├── collect2_dynamic.py   # Double-hand dynamic gesture collection
-    ├── process/              # Data processing module
+    ├── processdata/              # Data processing module
     │   ├── add_datas.py      # Data enhancement implementation
     │   ├── normalizedata.py  # Data normalization
     ├── widgets/              # Graphical interface module
